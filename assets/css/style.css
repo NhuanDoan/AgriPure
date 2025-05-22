@@ -1,0 +1,93 @@
+/* #2E7D32 
+#5AAB2F */
+
+.navbar {
+    background-color: white !important;
+}
+
+
+.navbar-brand {
+    color: #2E7D32 !important;
+    font-weight: bolder;
+}
+
+
+.status-dot i{
+    /* border: 2px solid #fff; Viền trắng */
+    /* background-color: #4CAF50; Mặc định là online */
+    color: green !important;
+}
+
+.status-dot.offline i{
+    /* background-color: #ccc; Màu xám cho offline */
+    color: red !important;
+}
+
+.content {
+    min-height: 100vh !important;
+}
+
+.content-func img {
+    height: 30vh !important;
+    object-fit: cover !important;
+}
+
+h2,h5 {
+    color: #2E7D32 !important;
+}
+
+.service i {
+    color: #2E7D32 !important;
+}
+
+.btn-outline-primary {
+    color: #2E7D32  !important; /* Màu chữ */
+    border-color: #2E7D32 !important; /* Màu viền */
+}
+
+.btn-outline-primary:hover, 
+.btn-outline-primary:focus {
+    background-color: #2E7D32 !important; /* Màu nền khi hover */
+    color: white !important; /* Màu chữ khi hover */
+}
+
+
+/* Mặc định: Mobile - dropdown nằm dưới icon */
+.custom-dropdown {
+    left: 0;
+    right: auto;
+  }
+  
+  /* Trên màn hình lớn hơn (>=768px) thì canh phải */
+  @media (min-width: 768px) {
+    .custom-dropdown {
+      left: auto !important;
+      right: 0 !important;
+    }
+  }
+  
+
+   /* Spinner style */
+   #spinner {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: white;
+    /* display: flex; */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  .spinner-circle {
+    width: 50px;
+    height: 50px;
+    border: 6px solid #ccc;
+    border-top: 6px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  
