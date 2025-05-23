@@ -19,6 +19,7 @@ function loadFarmDetail(id) {
                         <h3 class="text-success">${farm.tennongtrai}</h3>
                         <p><strong>Địa chỉ:</strong> ${farm.diachi}</p>
                         <p><strong>Chủ nông trại:</strong> ${farm.fname+" "+farm.lname || 'Đang cập nhật'}</p>
+                        <a href="index.php?page=chat&user_id=${farm.unique_id}" class="btn btn-outline-primary">Chat với chủ trang trại</a>
                     </div>
                 </div>
             `;
