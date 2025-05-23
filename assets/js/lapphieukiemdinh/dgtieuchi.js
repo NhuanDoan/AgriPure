@@ -4,6 +4,7 @@ function loadCriteria(certificationId, selectedCriteriaStatuses = {}) {
         .then(data => {
             const criteriaList = document.getElementById('criteria-list');
             criteriaList.innerHTML = '';
+
             data.forEach(criteria => {
                 const div = document.createElement('div');
                 div.classList.add('mb-3');
@@ -21,7 +22,45 @@ function loadCriteria(certificationId, selectedCriteriaStatuses = {}) {
                 `;
                 criteriaList.appendChild(div);
             });
+
+            // Gắn sự kiện change cho tất cả radio mới tạo
+            const radios = criteriaList.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    hideErrorMessage();
+                });
+            });
         });
+}
+
+function checkAllSelected() {
+    const criteriaList = document.getElementById('criteria-list');
+    const radioNames = new Set();
+
+    criteriaList.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radioNames.add(radio.name);
+    });
+
+    let allSelected = true;
+    radioNames.forEach(name => {
+        if (!criteriaList.querySelector(`input[name="${name}"]:checked`)) {
+            allSelected = false;
+        }
+    });
+
+    return allSelected;
+}
+
+function showErrorMessage(message) {
+    const errorMessage = document.getElementById('error-message');
+    errorMessage.textContent = message;
+    errorMessage.style.display = 'block';
+}
+
+function hideErrorMessage() {
+    const errorMessage = document.getElementById('error-message');
+    errorMessage.style.display = 'none';
+    errorMessage.textContent = '';
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -32,11 +71,25 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => response.json())
             .then(data => {
                 if (data.certification_id) {
-                    // Gọi hàm load với trạng thái tiêu chí đã lưu
                     loadCriteria(data.certification_id, data.criteria_status || {});
                 } else {
                     console.error("Không lấy được certification_id");
                 }
             });
     }
+
+    const submitBtn = document.getElementById('save');
+
+    submitBtn.addEventListener('click', function (event) {
+        if (!checkAllSelected()) {
+            event.preventDefault();
+            showErrorMessage("Vui lòng chọn trạng thái cho tất cả tiêu chí trước khi lưu!");
+            return false;
+        }
+
+        hideErrorMessage();
+        alert('Lưu thành công!');
+        // TODO: Thay bằng code submit form hoặc gửi ajax
+        // document.getElementById('lapphieukiemdinhForm').submit();
+    });
 });

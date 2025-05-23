@@ -168,7 +168,7 @@
                         window.location.href = response.redirect;
                     } else {
                         alert("Đặt hàng thành công!");
-                        window.location.href = "index.php?page=don-hang&id=" + response.order_id;
+                        window.location.href = "index.php?page=order&order_id=" + response.order_id;
                     }
                 } else {
                     alert("Lỗi: " + response.message);

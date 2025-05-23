@@ -168,10 +168,10 @@
                     </div>
                 <?php endif; ?>
                 <div class="form-group text-center">
-                    <a href="../index.php?page=product" class="btn btn-primary btn-lg">Quay lại trang sản phẩm</a>
+                    <a href="../index.php?page=order" class="btn btn-primary btn-lg">Đến trang đơn hàng</a>
                 </div>
                 <p class="text-center text-muted">
-                    <small>Trang sẽ tự động chuyển về trang sản phẩm sau <span id="countdown">15</span> giây...</small>
+                    <small>Trang sẽ tự động chuyển về trang đơn hàng sau <span id="countdown">15</span> giây...</small>
                 </p>
             </div>
         </div>
@@ -190,7 +190,7 @@
             if (seconds <= 0) {
             clearInterval(interval);
             // Chuyển hướng về trang sản phẩm
-            window.location.href = '../index.php?page=product';
+            window.location.href = '../index.php?page=order';
             }
         }, 1000);
     </script>

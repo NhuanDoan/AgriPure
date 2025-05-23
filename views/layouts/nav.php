@@ -27,47 +27,58 @@
                 <li class="nav-item">
                     <a class="nav-link" href="index.php?page=chatbot">AgriPure AI</a>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Kiểm định
-                    </a>
-                    <ul class="dropdown-menu">
-                        <!-- Chỉ nông dân mới có chức năng đăng ký kiểm định, quản lý bán hàng và xem phiếu
-                        kiểm định -->
-                        <?php 
-                            if($_SESSION['role'] == 2)
-                            {
-                                echo '<li class="dropdown-item">
-                                        <a class="nav-link" aria-current="page" href="index.php?page=dangkykiemdinh">Đăng ký kiểm định</a>
-                                    </li>
-                                    <li class="dropdown-item">
-                                        <a class="nav-link" href="index.php?page=xemphieukiemdinh">Xem phiếu kiểm định</a>
-                                    </li>
-                                    <li class="dropdown-item">
-                                        <a class="nav-link" href="index.php?page=xemchungchi&id_nongtrai='.$_SESSION['id_nongtrai'].'">Xem chứng chỉ</a>
-                                    </li>';
-                            }
-                           
-                            // Chỉ kiểm định viên mới có chức năng kiểm định
-                            if ($_SESSION['role'] == 1) {
-                            echo ' <li class="dropdown-item">
-                                        <a class="nav-link" href="index.php?page=kiemdinh">Kiểm định nông trại</a>
-                                    </li>
-                                    <li class="dropdown-item">
-                                        <a class="nav-link" href="index.php?page=xemchungchi&id_kdv='.$_SESSION['id_kiemdinhvien'].'">Xem chứng chỉ</a>
-                                    </li>';
-                            }
-                        ?>
-                    </ul>
-                </li>
                 <?php
+                    // Drop down kiểm định dành cho nông dân và nhà kiểm định
+                    if($_SESSION['role'] == 1 || $_SESSION['role'] == 2)
+                    {
+                        echo '<li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Kiểm định
+                                </a>
+                                <ul class="dropdown-menu">';
+
+
+                        // Chỉ nông dân mới có chức năng đăng ký kiểm định, quản lý bán hàng và xem phiếu
+                        // kiểm định
+                        if($_SESSION['role'] == 2)
+                        {
+                            echo '<li class="dropdown-item">
+                                    <a class="nav-link" aria-current="page" href="index.php?page=dangkykiemdinh">Đăng ký kiểm định</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a class="nav-link" href="index.php?page=xemphieukiemdinh">Xem phiếu kiểm định</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a class="nav-link" href="index.php?page=xemchungchi&id_nongtrai='.$_SESSION['id_nongtrai'].'">Xem chứng chỉ</a>
+                                </li>';
+                        }
+                        
+                        // Chỉ kiểm định viên mới có chức năng kiểm định
+                        if ($_SESSION['role'] == 1) {
+                        echo ' <li class="dropdown-item">
+                                    <a class="nav-link" href="index.php?page=kiemdinh">Kiểm định nông trại</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a class="nav-link" href="index.php?page=xemchungchi&id_kdv='.$_SESSION['id_kiemdinhvien'].'">Xem chứng chỉ</a>
+                                </li>';
+                        }
+
+                        echo '</ul>
+                            </li>';
+                    }
+
                     // Chat dành cho khách hàng và nông dân
                     if($_SESSION['role'] == 2 || $_SESSION['role'] == 4)
                     {
-                        echo ' <li class="nav-item">
+                        echo '<li class="nav-item">
                                 <a class="nav-link" href="index.php?page=chat-search">Chat</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="index.php?page=order">Đơn hàng</a>
                             </li>';
                     }
+
+                    // Chức năng quản lý sản phẩm của nông dân
                     if($_SESSION['role'] == 2)
                     {
                         echo ' <li class="nav-item">
@@ -76,7 +87,7 @@
                     }
                 ?>
             </ul>
-            <!-- Dropdown user -->
+            <!-- Dropdown user: người dùng, đăng nhập, đăng xuất và đăng ký-->
             <div class="nav-item dropdown position-relative">
                 <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fa-solid fa-user fa-2xl py-2" style="color:#1da1f2;"></i>

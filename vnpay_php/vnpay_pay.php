@@ -80,7 +80,6 @@
                 </div>
                 <div class="form-group text-center">
                     <button type="submit" class="btn btn-main btn-lg">Thanh toán</button>
-                    <a href="products.php" class="btn btn-default btn-lg">Quay lại sản phẩm</a>
                 </div>
             </form>
         </div>

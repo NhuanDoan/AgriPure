@@ -3,6 +3,12 @@
     header('Content-Type: application/json');
     include_once("../../models/config.php");
 
+    // Kiểm tra xem kiểm định viên đã đăng nhập chưa
+    if (!isset($_SESSION['id_kiemdinhvien'])) {
+        echo json_encode(["success" => false, "message" => "Bạn chưa đăng nhập hoặc không có quyền."]);
+        exit();
+    }
+
     $data = json_decode(file_get_contents("php://input"), true);
     $id_phieukiemdinh = $data['id_phieukiemdinh'] ?? null;
     $issue_date = $data['ngay_cap'] ?? null;
@@ -12,10 +18,11 @@
         exit();
     }
 
-    // Lấy thông tin từ phiếu kiểm định
+    // Lấy thông tin phiếu kiểm định kèm trạng thái
     $stmt = $conn->prepare("
         SELECT 
             pk.id AS phieukiemdinh_id,
+            pk.status,
             nt.id_nongtrai AS nongtrai_id,
             ct.id AS certification_type_id,
             nt.tennongtrai,
@@ -38,6 +45,13 @@
     }
 
     $info = $result->fetch_assoc();
+
+    // Kiểm tra trạng thái phiếu kiểm định
+    if ($info['status'] !== 'Đã kiểm định') {
+        echo json_encode(["success" => false, "message" => "Phiếu kiểm định chưa được duyệt hoặc chưa kiểm định"]);
+        exit();
+    }
+
     $nongtrai_id = $info['nongtrai_id'];
     $certification_type_id = $info['certification_type_id'];
 
@@ -49,27 +63,32 @@
     $stmtCheck->bind_param("ii", $nongtrai_id, $certification_type_id);
     $stmtCheck->execute();
     $resultCheck = $stmtCheck->get_result();
+
     if ($resultCheck->num_rows > 0) {
         echo json_encode(["success" => false, "message" => "Nông trại đã có chứng chỉ còn hiệu lực cho loại này."]);
         exit();
     }
 
-    // Tính ngày hết hạn (ví dụ: 1 năm)
+    // Tính ngày hết hạn (cộng thêm 1 năm)
     $expiry_date = date('Y-m-d', strtotime($issue_date . ' +1 year'));
     $status = "Đạt";
     $id_kdv = $_SESSION['id_kiemdinhvien'];
 
-    // Ghi chứng chỉ mới
-    try {
-        $stmtInsert = $conn->prepare("
-            INSERT INTO certificates (nongtrai_id, certification_type_id, id_pkd, id_kdv, issue_date, expiry_date, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ");
-        $stmtInsert->bind_param("iiiisss", $nongtrai_id, $certification_type_id,$id_phieukiemdinh, $id_kdv, $issue_date, $expiry_date, $status);
-        $stmtInsert->execute();
+    // Thêm chứng chỉ mới vào DB
+    $stmtInsert = $conn->prepare("
+        INSERT INTO certificates (nongtrai_id, certification_type_id, id_pkd, id_kdv, issue_date, expiry_date, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ");
+    if (!$stmtInsert) {
+        echo json_encode(["success" => false, "message" => "Lỗi chuẩn bị câu lệnh SQL: " . $conn->error]);
+        exit();
+    }
 
+    $stmtInsert->bind_param("iiiisss", $nongtrai_id, $certification_type_id, $id_phieukiemdinh, $id_kdv, $issue_date, $expiry_date, $status);
+
+    if ($stmtInsert->execute()) {
         echo json_encode(["success" => true]);
-    } catch (Exception $e) {
-        echo json_encode(["success" => false, "message" => "Lỗi: " . $e->getMessage()]);
+    } else {
+        echo json_encode(["success" => false, "message" => "Lỗi khi lưu chứng chỉ: " . $stmtInsert->error]);
     }
 ?>

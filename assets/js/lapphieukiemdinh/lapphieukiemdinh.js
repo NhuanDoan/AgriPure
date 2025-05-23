@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const id_phieukiemdinh = document.getElementById("id_phieukiemdinh").value;
-    
+
+    // Load thông tin phiếu kiểm định và danh sách kiểm định viên
     if (id_phieukiemdinh) {
         fetch(`controllers/lapphieukiemdinh/get-phieukiemdinh.php?id_phieukiemdinh=${id_phieukiemdinh}`)
             .then(response => response.json())
@@ -16,65 +17,83 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("binhluan").value = data.binhluan || "";
                     document.getElementById("danhgia").value = data.danhgia || "";
                     document.getElementById("chungnhan").value = data.name || "";
-                    
-
 
                     const selectKiemDinhVien = document.getElementById("id_kdv");
-                    selectKiemDinhVien.innerHTML = ''; // Xóa hết option cũ
+                    selectKiemDinhVien.innerHTML = '';
                     data.kiemdinhvien_list.forEach(kdv => {
-                        selectKiemDinhVien.innerHTML += `<option value="${kdv.manv}" selected>${kdv.hoten}</option>`;
+                        // Không dùng selected trong tất cả option, chỉ chọn nếu có logic riêng
+                        selectKiemDinhVien.innerHTML += `<option value="${kdv.manv}">${kdv.hoten}</option>`;
                     });
-                    // selectKiemDinhVien.disabled = true;
                 }
             })
             .catch(error => console.error("Lỗi lấy dữ liệu phiếu kiểm định:", error));
     }
-});
 
-document.addEventListener("DOMContentLoaded", function () {
+    // Hàm kiểm tra tiêu chí đã chọn đủ chưa
+    function checkAllSelected() {
+        const criteriaList = document.getElementById('criteria-list');
+        const radioNames = new Set();
+
+        criteriaList.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radioNames.add(radio.name);
+        });
+
+        let allSelected = true;
+        radioNames.forEach(name => {
+            if (!criteriaList.querySelector(`input[name="${name}"]:checked`)) {
+                allSelected = false;
+            }
+        });
+
+        return allSelected;
+    }
+
+    // Xử lý khi bấm nút lưu
     document.getElementById("save").addEventListener("click", function () {
-        let data = new FormData();
-        const id_phieukiemdinh = document.getElementById("id_phieukiemdinh").value;
-        data.append("id_phieukiemdinh", id_phieukiemdinh);
-        data.append("binhluan", document.getElementById("binhluan").value.trim());
-        data.append("danhgia", document.getElementById("danhgia").value.trim());
-        data.append("id_kdv", document.getElementById("id_kdv").value);
+        if (!checkAllSelected()) {
+            alert("Vui lòng chọn trạng thái cho tất cả tiêu chí trước khi lưu!");
+            return; // dừng xử lý gửi form
+        }
+
+        // Gửi dữ liệu phiếu kiểm định (binhluan, danhgia, id_kdv)
+        let dataPhieu = new FormData();
+        dataPhieu.append("id_phieukiemdinh", id_phieukiemdinh);
+        dataPhieu.append("binhluan", document.getElementById("binhluan").value.trim());
+        dataPhieu.append("danhgia", document.getElementById("danhgia").value.trim());
+        dataPhieu.append("id_kdv", document.getElementById("id_kdv").value);
 
         fetch("controllers/lapphieukiemdinh/update-phieukiemdinh.php", {
             method: "POST",
-            body: data
+            body: dataPhieu
         })
         .then(response => response.json())
         .then(response => {
-            console.log("Server Response:", response);
-            alert(response.message);
-            if (response.status === "success") {
-                window.location.href = "index.php?page=chitietphieukiemdinh&id_phieukiemdinh="+id_phieukiemdinh;
+            if (response.status !== "success") {
+                alert(response.message || "Lỗi cập nhật phiếu kiểm định!");
+                throw new Error("Lỗi cập nhật phiếu kiểm định");
             }
-        })
-        .catch(error => {
-            console.error("Lỗi gửi yêu cầu!", error);
-            alert("Lỗi gửi yêu cầu! Kiểm tra console.");
-        });
-    });
 
-    document.getElementById("save").addEventListener("click", function () {
-        const form = document.getElementById("lapphieukiemdinhForm");
-        const formData = new FormData(form);
-    
-        fetch('controllers/lapphieukiemdinh/save-phieukiemdinh_chitiet.php', {
-            method: 'POST',
-            body: formData
+            // Nếu thành công, tiếp tục gửi dữ liệu tiêu chí
+            const form = document.getElementById("lapphieukiemdinhForm");
+            const formData = new FormData(form);
+
+            return fetch('controllers/lapphieukiemdinh/save-phieukiemdinh_chitiet.php', {
+                method: 'POST',
+                body: formData
+            });
         })
         .then(res => res.json())
         .then(data => {
             if (data.status === "success") {
                 alert("Cập nhật tiêu chí đánh giá thành công!");
-                window.location.href = `index.php?page=chitietphieukiemdinh&id_phieukiemdinh=${formData.get('id_phieukiemdinh')}`;
+                window.location.href = `index.php?page=chitietphieukiemdinh&id_phieukiemdinh=${id_phieukiemdinh}`;
             } else {
-                alert(data.message || "Có lỗi xảy ra");
+                alert(data.message || "Có lỗi xảy ra khi lưu tiêu chí!");
             }
+        })
+        .catch(error => {
+            console.error("Lỗi gửi yêu cầu:", error);
+            alert("Có lỗi xảy ra, vui lòng thử lại.");
         });
     });
 });
-
