@@ -84,6 +84,20 @@
                         echo ' <li class="nav-item">
                                 <a class="nav-link" href="index.php?page=quanlysanpham">Quản lý sản phẩm</a>
                             </li>';
+
+                        echo '<li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Truy xuất sản phẩm
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown-item">
+                                        <a class="nav-link" href="index.php?page=blockchain">Tạo block sản phẩm</a>
+                                    </li>
+                                    <li class="dropdown-item">
+                                        <a class="nav-link" href="index.php?page=quanly-block">Quản lý block</a>
+                                    </li>
+                                </ul>
+                            </li>';
                     }
                 ?>
             </ul>
